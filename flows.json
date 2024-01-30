@@ -1,0 +1,334 @@
+[
+    {
+        "id": "b4659418f36793b9",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "c9264b48ac28fad5",
+        "type": "http in",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "url": "/getFeedback",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "75f40b80ec2cfae1",
+                "eae4e309db645d05"
+            ]
+        ]
+    },
+    {
+        "id": "75f40b80ec2cfae1",
+        "type": "function",
+        "z": "b4659418f36793b9",
+        "name": "function 1",
+        "func": "msg.userData = msg.payload;\nmsg.url = msg.userData.url;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 80,
+        "wires": [
+            [
+                "19a3602b03147b5c",
+                "839e4252c6930beb"
+            ]
+        ]
+    },
+    {
+        "id": "19a3602b03147b5c",
+        "type": "http request",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "body",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 470,
+        "y": 80,
+        "wires": [
+            [
+                "02b43ee2dd224477"
+            ]
+        ]
+    },
+    {
+        "id": "02b43ee2dd224477",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 720,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "90bccbe572375d23",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1020,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "4088bba66382872d",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "55d5db6359a0fa94",
+        "type": "function",
+        "z": "b4659418f36793b9",
+        "name": "make request",
+        "func": "const data = msg.payload[0]\nmsg.OPENAI_API_KEY = \"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\";\n// msg.model = credential.model;\n// msg.prompt = `Create a poll-only question without an answer option based on specific criteria:Context: ${credential.context}.Goal: ${credential.goal}.Based on the above context and goal generate ${credential.number} of survey questions;`;\nmsg.messages= [\n    {\n        role: \"system\",\n        content: \"act as a web analyst\",\n    },\n    { role: \"user\", content: `${data}\n    The above is the website content for https://www.readersdigest.co.uk/culture/music/why-are-concert-tickets-so-expensive-now. Give both positive and negative feedback on the content based on the goal: Goal: SEO Feedback:` },\n];\n\n\n\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 180,
+        "wires": [
+            [
+                "abaccb29fd60f0c9",
+                "3ddddace26481a2a"
+            ]
+        ]
+    },
+    {
+        "id": "abaccb29fd60f0c9",
+        "type": "openai-ubos",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "model": "gpt-3.5-turbo",
+        "temperature": 0.5,
+        "max_tokens": 500,
+        "prompt": "",
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+        "top_p": 1,
+        "stop": {
+            "type": "json",
+            "value": "[]"
+        },
+        "OPENAI_API_KEY": "",
+        "x": 740,
+        "y": 180,
+        "wires": [
+            [
+                "baf4fee8d569cfa9",
+                "4088bba66382872d"
+            ]
+        ]
+    },
+    {
+        "id": "baf4fee8d569cfa9",
+        "type": "function",
+        "z": "b4659418f36793b9",
+        "name": "response",
+        "func": "if(msg.statusCode === 200){\n    const answers = msg.payload.choices[0].message.content\n    msg.payload= answers;\n}\nelse {\n    msg.payload = \"Ooops, something went wrong!\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 180,
+        "wires": [
+            [
+                "7e57c7bee4ce47fe",
+                "90bccbe572375d23"
+            ]
+        ]
+    },
+    {
+        "id": "7e57c7bee4ce47fe",
+        "type": "http response",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1070,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "d1a4dfc3923a698c",
+        "type": "catch",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "scope": null,
+        "uncaught": false,
+        "x": 320,
+        "y": 240,
+        "wires": [
+            [
+                "3ddddace26481a2a"
+            ]
+        ]
+    },
+    {
+        "id": "3ddddace26481a2a",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "msg",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8e1b68b419a3aa4b",
+        "type": "html",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "property": "payload",
+        "outproperty": "payload",
+        "tag": "div",
+        "ret": "text",
+        "as": "single",
+        "x": 630,
+        "y": 120,
+        "wires": [
+            [
+                "55d5db6359a0fa94",
+                "02b43ee2dd224477"
+            ]
+        ]
+    },
+    {
+        "id": "eae4e309db645d05",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 300,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "b7ab102cf9517aa7",
+        "type": "http in",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "url": "/css",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 380,
+        "wires": [
+            [
+                "ec25cd2e1b3a4c03"
+            ]
+        ]
+    },
+    {
+        "id": "bd563a0724955d05",
+        "type": "http response",
+        "z": "b4659418f36793b9",
+        "name": "",
+        "statusCode": "",
+        "headers": {
+            "content-type": "text/css"
+        },
+        "x": 430,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "ec25cd2e1b3a4c03",
+        "type": "template",
+        "z": "b4659418f36793b9",
+        "name": "customCSS",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "mustache",
+        "template": ".main_container {\n  top:0 !important;\n  left: 0 !important; \n  height: 100vh !important;\n  width: 100% !important;\n}\n.main_container>div>div>div>div>div>div>div>div>div>div {\n  height:100% !important; \n}\n.bp3-input, .select-button {\n    border-radius: 5px !important;\n    color: #495894 !important;\n}\n.select-button span {\n    color: inherit !important;\n}\n/* __________LEFT SIDE__________________ */\n.title .bp3-ui-text {\n   font-size: clamp(20px, 2.3vw, 50px) !important; \n   cursor: default !important;\n}\n.form_container {\ntop:0 !important;\nleft: 0 !important;\nwidth: 45% !important;\n}\n\n\n/* __________RIGHT SIDE__________________ */\n.answer_container {\nheight: 100vh !important;\ntop:0 !important;\nwidth: 55% !important;\nleft: 45% !important;\nborder: none !important;\npadding: 20px !important;\n\n}\n\n/* .generate_btn{\n  width: 50% !important;\n  left: 25% !important;\n} */\n.generate_btn span{\n    color: #FFFFFF !important;\n}\n\n/* .answers >div >div >div >div >div {\n  border-radius: 5px;\n  padding: 7px !important;\n} */\n",
+        "output": "str",
+        "x": 270,
+        "y": 380,
+        "wires": [
+            [
+                "bd563a0724955d05"
+            ]
+        ]
+    },
+    {
+        "id": "839e4252c6930beb",
+        "type": "debug",
+        "z": "b4659418f36793b9",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 40,
+        "wires": []
+    }
+]
